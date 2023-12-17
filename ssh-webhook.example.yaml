@@ -1,0 +1,69 @@
+# List of SSH servers to connect to.
+ssh:
+  # SSH servers to connect to
+  servers:
+    - name: "server1" # SSH name to identify the server in the webhook configuration
+      host: "remote.server.com" # SSH host (include the port if not 22)
+      user: "root" # SSH user
+      password: "password" # SSH password
+      # SSH private key. If provided, the password will be ignored.
+      # The key must be in PEM format.
+      # If the key is encrypted, the passphrase must be provided.
+      path_to_key: "/path/to/key.pem"
+      passphrase: "passphrase"
+      # Keep the SSH connection alive
+      # This is useful if webhook is used to execute commands frequently.
+      # If the connection is not kept alive, response time will be slow since,
+      # the SSH connection will be established every time.
+      keep_alive: true # default: true
+      # Retry to connect to the SSH server if the connection failed.
+      retry: true # default: true
+      # The number of times to retry to connect to the SSH server if the connection failed.
+      # 0 means infinite
+      retry_count: 0 # default: 0
+      # The number of seconds to wait before retrying to connect to the SSH server if the connection failed.
+      retry_interval: 15 # default: 15
+      # The number of seconds to wait for the SSH server to respond.
+      timeout: 30 # default: 30
+      # Known hosts is a list of known hosts to be used to verify the SSH server.
+      # If ignore_known_hosts is true, the known hosts will not be checked.
+      # It is not recommended to ignore the known hosts. This is only useful for testing.
+      # Follow the tutorial to add the SSH server to the known hosts.
+      ignore_known_hosts: true # default: false
+# List of webhooks to be used to execute commands on the SSH servers
+webhooks:
+  # Server path to be used in the webhook url (e.g https://ssh.example.com/server1)
+  - path: "server1"
+    # SSH server name for command to be executed on
+    ssh_name: "server1"
+    # List of commands allowed to be executed using this server.
+    # If both "blacklist" and "whitelist" not provided, all commands will be allowed.
+    # If the command, starts with one of the following entries it will be allowed.
+    cmd_whitelist:
+      - "ls"
+    # List of commands not allowed to be executed using this server.
+    # If whitelist is provided, blacklist will be ignored.
+    # If the command, starts with one of the following entries it will be denied.
+    cmd_blacklist:
+      - "rm"
+    # Webhook authentication for this server
+    auth:
+      # List of allowed ip addresses.
+      # If both "whitelist" and "blacklist" not provided, all ip addresses will be allowed.
+      ip_whitelist:
+        - "192.168.1.9"
+      # List of denied ip addresses.
+      # If whitelist is provided, blacklist will be ignored.
+      ip_blacklist:
+        - "192.168.1.8"
+      # The header to retrieve the ip address from. If not provided, the ip address will be retrieved from the request.
+      # Remove this if the application is not behind a reverse proxy such as Nginx, Caddy, Apache, etc.
+      # Make sure the application gets the correct ip address for rate limiting the unauthorized requests.
+      ip_from_header: "X-Forwarded-For"
+      # The header information to authenticate the request.
+      # If not provided no header authentication will be required.
+      headers:
+        # Some examples of headers that can be used for authentication
+        "X-Auth-Token": "secret-token"
+        "X-Auth-User": "username"
+        "X-Auth-Password": "password"
