@@ -117,12 +117,12 @@ func (client *SSHClient) connect() (*goph.Client, *ssh.Client, error) {
 		HostKeyCallback: client.callback,
 		BannerCallback:  bannerCallback,
 		HostKeyAlgorithms: []string{
-			ssh.KeyAlgoED25519,
-			ssh.KeyAlgoRSA,
-			ssh.KeyAlgoDSA,
 			ssh.KeyAlgoECDSA256,
 			ssh.KeyAlgoECDSA384,
 			ssh.KeyAlgoECDSA521,
+			ssh.KeyAlgoED25519,
+			ssh.KeyAlgoRSA,
+			ssh.KeyAlgoDSA,
 		},
 	})
 	if err != nil {
